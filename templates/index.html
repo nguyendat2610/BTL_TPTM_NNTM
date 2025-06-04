@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <title>Giám sát Tốc độ Phương tiện</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #video { border: 2px solid #000; }
+        #violations { margin-top: 20px; }
+        .violation { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Camera Giám sát Tốc độ Phương tiện</h1>
+    <img src="{{ url_for('video_feed') }}" id="video" width="640" height="480">
+    <h2>Danh sách vi phạm</h2>
+    <div id="violations">
+        <!-- Danh sách vi phạm sẽ được cập nhật bởi JavaScript -->
+    </div>
+
+    <script>
+        function loadViolations() {
+            fetch('/get_violations')
+                .then(response => response.json())
+                .then(data => {
+                    const violationsDiv = document.getElementById('violations');
+                    violationsDiv.innerHTML = '';
+                    data.forEach(v => {
+                        const div = document.createElement('div');
+                        div.className = 'violation';
+                        div.innerHTML = `<strong>${v.timestamp}</strong><br>Tốc độ: ${v.speed} km/h<br>Biển số: ${v.plate}<br><img src="/violations/${v.image}" width="200">`;
+                        violationsDiv.appendChild(div);
+                    });
+                });
+        }
+        setInterval(loadViolations, 5000); // Cập nhật mỗi 5 giây
+    </script>
+</body>
+</html>
